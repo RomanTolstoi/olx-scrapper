@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLX Car Scraper</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .car-card {
+            height: 100%;
+            transition: transform 0.3s;
+        }
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .car-image {
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <header class="pb-3 mb-4 border-bottom">
+            <h1 class="display-5 fw-bold">OLX Car Scraper</h1>
+            <p class="lead">Simple web scraper for OLX car listings</p>
+        </header>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form th:action="@{/scrape}" method="post" class="d-flex gap-2">
+                    <div class="input-group">
+                        <span class="input-group-text">Car brand</span>
+                        <input name="brend" class="form-control" placeholder="bmw">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Scrape Now</button>
+                </form>
+            </div>
+            <div class="col-md-6 text-end">
+                <p class="mt-2 text-body-secondary" th:if="${not #lists.isEmpty(cars)}">
+                    Found <span th:text="${#lists.size(cars)}">0</span> cars
+                </p>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(cars)}" class="alert alert-info">
+            No cars have been scraped yet. Click "Scrape Now" to start.
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col" th:each="car : ${cars}">
+                <div class="card car-card h-100">
+                    <img th:if="${not #strings.isEmpty(car.imageUrl)}" 
+                         th:src="${car.imageUrl}" 
+                         class="card-img-top car-image" 
+                         alt="Car image">
+                    <div th:if="${#strings.isEmpty(car.imageUrl)}" 
+                         class="card-img-top car-image bg-light d-flex justify-content-center align-items-center">
+                        <span class="text-muted">No image</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${car.title}">Car Title</h5>
+                        <h6 class="card-subtitle mb-2 text-primary" th:text="${car.price}">$10,000</h6>
+                        <p class="card-text text-muted" th:text="${car.details}">Location and date</p>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="${car.url}" target="_blank" class="btn btn-sm btn-outline-primary w-100">
+                            View on OLX
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
